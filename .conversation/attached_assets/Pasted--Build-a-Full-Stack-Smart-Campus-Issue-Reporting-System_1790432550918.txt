@@ -1,0 +1,750 @@
+# Build a Full-Stack Smart Campus Issue Reporting System
+
+Create a modern, responsive, production-style web application called **CampusCare** — a centralized smart campus issue reporting and resolution platform.
+
+The purpose of the application is to allow students and staff to report campus problems, automatically categorize and prioritize them, allow administrators to manage them, and provide transparent real-time status tracking.
+
+The website should look polished enough for a college hackathon demonstration.
+
+---
+
+# 1. Core Concept
+
+The application should support this complete workflow:
+
+**Student/Staff → Report Issue → AI Categorization → Priority Detection → Admin Review → Status Updates → Resolution → Transparent Tracking**
+
+Example:
+
+A student reports:
+
+> "There is water leaking from the ceiling in Block B, Room 304 and the floor is getting flooded."
+
+The system should automatically determine:
+
+* Category: **Plumbing**
+* Priority: **High**
+* Location: **Block B → Floor 3 → Room 304**
+* Status: **Reported**
+
+The administrator can then change:
+
+**Reported → In Progress → Resolved**
+
+The student should be able to track the issue throughout the entire process.
+
+---
+
+# 2. User Roles
+
+Create two main roles.
+
+## Student/Staff
+
+Can:
+
+* Create an issue
+* Enter description with location
+* Select or enter category
+* Upload an optional image
+* Submit the issue
+* View their submitted issues
+* Track issue status
+* View issue timeline
+* Search/filter their issues
+* Receive notifications when status changes
+* See issue ID
+
+## Administrator
+
+Can:
+
+* View all reported issues
+* View statistics
+* Filter issues
+* Search issues
+* Open individual issue details
+* Change status
+* Assign department
+* Change priority if necessary 
+* Add resolution notes
+* Mark issues as resolved
+* View issue history
+* Detect/view duplicate issues
+* View campus issue analytics
+
+---
+
+# 3. Student Dashboard
+
+Create a clean dashboard with:
+
+### Header
+
+* CampusCare logo
+* Dashboard
+* My Issues
+* Report Issue
+* Notifications
+* User profile
+* Logout
+
+### Dashboard statistics
+
+Show cards for:
+
+* Total Issues
+* Reported
+* In Progress
+* Resolved
+
+### Recent Issues
+
+Display issue cards/table with:
+
+* Issue ID
+* Short description
+* Category
+* Location
+* Priority
+* Status
+* Date submitted
+* View button
+
+Use clear visual status indicators:
+
+* Reported = yellow
+* In Progress = blue
+* Resolved = green
+* High/Critical priority = red
+
+---
+
+# 4. Report Issue Page
+
+Create a polished issue reporting form.
+
+Fields:
+
+### Description
+
+Large text area.
+
+Placeholder:
+
+> "Describe the issue in detail..."
+
+### Category
+
+Dropdown with:
+
+* Electrical
+* Plumbing
+* Internet/Wi-Fi
+* Furniture
+* Sanitation
+* Security
+* Classroom
+* Laboratory
+* Transport
+* Infrastructure
+* Other
+
+Allow AI to automatically suggest the category from the description.
+
+### Location
+
+Create structured location selection:
+
+* Campus
+* Block
+* Floor
+* Room/Area
+
+allow a custom location field.
+
+### Image
+
+Optional image upload.
+
+Show image preview after selection.
+
+### Submit button
+
+**Report Issue**
+
+After submission:
+
+Show a confirmation screen containing:
+
+> Issue reported successfully!
+
+Generate a unique issue ID such as:
+
+**CAM-1042**
+
+---
+
+# 5. AI Categorization
+
+Implement automatic categorization based on the issue description.
+
+Example:
+
+Input:
+
+> "The fan in Room 204 is not working."
+
+Output:
+
+**Category: Electrical**
+
+Input:
+
+> "Water is leaking from the bathroom ceiling."
+
+Output:
+
+**Category: Plumbing**
+
+Input:
+
+> "The Wi-Fi connection keeps disconnecting in the computer lab."
+
+Output:
+
+**Category: Internet/Wi-Fi**
+
+create an AI tool for category detection. 
+
+
+Allow the administrator to override the AI suggestion.
+
+---
+
+# 6. AI Priority Detection
+
+Automatically assign priority based on the description.
+
+Priority levels:
+
+### Critical
+
+Immediate safety/security risk.
+
+Examples:
+
+* Exposed electrical wires
+* Fire
+* Major flooding
+* Gas leak
+* Serious security issue
+* ragging
+
+### High
+
+Requires urgent attention.
+
+Examples:
+
+* Large water leak
+* Major power failure
+* Broken security equipment
+
+### Medium
+
+Important but not immediately dangerous.
+
+Examples:
+
+* Broken classroom fan
+* Projector not working
+* Wi-Fi issue
+
+### Low
+
+Minor inconvenience.
+
+Examples:
+
+* Broken chair
+* Small cosmetic damage
+* Minor maintenance issue
+
+Display:
+
+🔴 Critical
+🟠 High
+🟡 Medium
+🟢 Low
+
+AI should explain the reason briefly.
+
+Example:
+
+> **Priority: High**
+>
+> Reason: Water leakage may cause property damage and create a safety hazard.
+
+Administrators must be able to manually change the priority.
+
+---
+
+# 7. Duplicate Issue Detection
+
+Implement smart duplicate detection.
+
+When a new issue is submitted, compare:
+
+* Description
+* Category
+* Location
+* Existing issues
+
+If a similar issue already exists, show:
+
+> ⚠️ Similar issue detected
+
+Example:
+
+> A similar electrical issue was reported in Block A, Room 204.
+
+Show:
+
+* Existing issue ID
+* Description
+* Location
+* Current status
+
+Give the user two options:
+
+**View Existing Issue**
+
+or
+
+**Submit Anyway**
+
+Do not prevent submission completely.
+
+If real AI/semantic similarity is unavailable, implement a basic keyword/location similarity system as a fallback.
+
+---
+
+# 8. Issue Detail Page
+
+Create a detailed page for every issue.
+
+Example:
+
+# Issue CAM-1042
+
+**Water leakage in Room 304**
+
+### Details
+
+Category: Plumbing
+
+Priority: High
+
+Location: Block B → 3rd Floor → Room 304
+
+Reported by: Student
+
+Reported on: September 26, 2026
+
+Current status:
+
+🔵 **In Progress**
+
+Show uploaded image if available.
+
+---
+
+# 9. Status Timeline
+
+Every issue must have a visual timeline.
+
+Example:
+
+🟢 Resolved
+│
+│ September 26, 4:45 PM
+│
+🔵 In Progress
+│
+│ September 26, 1:20 PM
+│
+🟡 Reported
+│
+└── September 26, 10:32 AM
+
+Statuses:
+
+1. Reported
+2. In Progress
+3. Resolved
+
+The system should save timestamps for each status change.
+
+Students can see the complete history.
+
+---
+
+# 10. Admin Dashboard
+
+Create a professional admin dashboard.
+
+At the top display:
+
+* Total Issues
+* Critical Issues
+* Pending Issues
+* In Progress
+* Resolved
+
+Example:
+
+**128 Total**
+
+**7 Critical**
+
+**31 Reported**
+
+**42 In Progress**
+
+**55 Resolved**
+
+---
+
+# 11. Admin Issue Table
+
+Create a searchable and filterable table.
+
+Columns:
+
+* Issue ID
+* Issue
+* Category
+* Location
+* Priority
+* Status
+* Reported Date
+* Assigned Department
+* Actions
+
+Filters:
+
+* Category
+* Priority
+* Status
+* Department
+* Location
+* Date
+
+Sorting:
+
+* Newest
+* Oldest
+* Highest priority
+* Recently updated
+
+---
+
+# 12. Admin Issue Management
+
+When an administrator opens an issue, allow them to:
+
+* Change status
+* Change priority
+* Assign department
+* Add notes
+* Add resolution notes
+* Mark as resolved
+
+Departments:
+
+* Electrical
+* Plumbing
+* IT Support
+* Maintenance
+* Security
+* Housekeeping
+* Administration
+
+When the status changes, record the event in the timeline.
+
+Example:
+
+> Admin changed status from Reported → In Progress
+
+---
+
+# 13. Notifications
+
+Create a notification system.
+
+Examples:
+
+> 🔔 Your issue CAM-1042 is now In Progress.
+
+> 🔔 Your issue CAM-1042 has been resolved.
+
+> 🔔 A similar issue has already been reported in your location.
+
+Show unread notification count in the navigation bar.
+
+For the hackathon, notifications can be implemented inside the application rather than requiring SMS/email.
+
+---
+
+
+
+locations to be entered:
+NORTH CAMPUS:
+Ramanujacharya block (floors - UG,G,1,2,3)
+Shankaracharya block (floors - G,1,2,3)
+Madhvacharya block (floors - G)
+Girls hostel (G,1,2,3,4)
+Boys hostel (G,1,2,3,4,5)
+
+SOUTH CAMPUS: 
+
+Administrative block (floors – G,1,2)
+Golden Jublee block (floors – UG,G,1,2,3)
+Diamond jublee complex
+Girls hostel (G,1,2,3)
+Boys hostel  (G,1,2,3,4)
+
+Use:
+
+🔴 Critical/High
+
+🟡 Medium
+
+🟢 Low/Resolved
+
+Clicking a marker should show:
+
+* Issue ID
+* Category
+* Location
+* Priority
+* Status
+
+
+---
+
+# 15. Analytics
+
+Create an admin analytics section.
+
+Show:
+
+
+### Issues by Status
+
+Reported / In Progress / Resolved.
+
+### Issues by Priority
+
+Critical / High / Medium / Low.
+
+### Issues by Location
+
+Identify areas with the highest number of complaints.
+
+### Resolution Trends
+
+Show issues resolved over time.
+
+Add a simple insight section:
+
+> 💡 Most reported issue category this month: Electrical
+
+> 💡 Block B currently has the highest number of open issues.
+
+These insights should be calculated from the actual database data.
+
+---
+
+# 16. Search
+
+Implement global issue search.
+
+Search by:
+
+* Issue ID
+* Description
+* Category
+* Location
+* Status
+
+Example:
+
+Searching:
+
+`CAM-1042`
+
+should open the corresponding issue.
+
+---
+
+# 17. Database
+
+Create a proper database structure.
+
+### Users
+
+Fields:
+
+* id
+* name
+* email
+* role
+
+### Issues
+
+Fields:
+
+* id
+* issue_id
+* description
+* category
+* ai_category
+* priority
+* ai_priority
+* location
+* campus
+* block
+* floor
+* room
+* image_url
+* status
+* assigned_department
+* reported_by
+* created_at
+* updated_at
+* resolved_at
+
+### Status History
+
+Fields:
+
+* id
+* issue_id
+* previous_status
+* new_status
+* changed_by
+* timestamp
+* note
+
+### Notifications
+
+Fields:
+
+* id
+* user_id
+* issue_id
+* message
+* read
+* created_at
+
+---
+
+# 18. Authentication
+
+Create simple authentication.
+
+Login page:
+
+* Email
+* Password
+* Login
+
+(demo accounts not required)
+
+Use role-based access to students, admins and staff.
+
+---
+
+# 19. UI / UX Design
+
+The design should look modern, professional and suitable for a college technology hackathon in dark mode.
+
+Style:
+
+* Clean
+* Modern
+* Minimal
+* Responsive
+* Professional
+* Easy to understand
+
+Use:
+
+* Cards
+* Rounded corners
+* Subtle shadows
+* Clear typography
+* Consistent spacing
+* Icons
+* Status badges
+* Charts
+* Responsive tables
+
+Do NOT make it look like a generic template.
+
+The homepage should immediately communicate:
+
+> **Report. Track. Resolve.**
+
+Subtitle:
+
+> A smarter and more transparent way to solve campus issues.
+
+Include a prominent:
+
+**Report an Issue** button.
+
+---
+
+# 20. Landing Page
+
+Create a landing page containing:
+
+### Hero
+
+**CampusCare**
+
+**Smart Campus Issue Reporting**
+
+> Report campus problems. Track progress. See them resolved.
+
+Buttons:
+
+**Report an Issue**
+
+**Track an Issue**
+
+### How it works
+
+1. **Report**
+   Submit an issue with description, location and optional image.
+
+2. **Smart Analysis**
+   AI automatically categorizes the issue.
+
+3. **Track**
+   Follow the issue from Reported → In Progress → Resolved.
+
+4. **Resolve**
+   Administrators manage and resolve issues transparently.
+
+### Features
+
+* 🤖 AI Categorization
+* 📍 Location Tracking
+* 🔎 Duplicate Detection
+* 📊 Analytics
+* 🔔 Notifications
+* 📈 Transparent Status Tracking

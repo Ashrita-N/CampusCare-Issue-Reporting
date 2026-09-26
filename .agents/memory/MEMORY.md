@@ -1,0 +1,1 @@
+- [Generated client DOM iterable](api-client-dom-iterable.md) — Orval browser clients using Headers.entries require TypeScript dom.iterable.

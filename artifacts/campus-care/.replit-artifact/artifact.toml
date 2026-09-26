@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "CampusCare"
+description = "A smart campus issue reporting and resolution platform for students, staff, and administrators, with transparent tracking, categorization, duplicate detection, notifications, and analytics."
+version = "1.0.0"
+id = "artifacts/campus-care"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24087
+
+[services.development]
+run = "pnpm --filter @workspace/campus-care run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/campus-care", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/campus-care/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24087"
+BASE_PATH = "/"

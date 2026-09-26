@@ -1,22 +1,24 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: CampusCare issue reporting and resolution API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: dashboard
+  - name: issues
+  - name: notifications
+  - name: analytics
+  - name: metadata
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +26,393 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+  /issues:
+    get:
+      operationId: getIssues
+      tags: [issues]
+      summary: List campus issues
+      parameters:
+        - in: query
+          name: mine
+          schema: { type: boolean, default: false }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: priority
+          schema: { type: string }
+        - in: query
+          name: status
+          schema: { type: string }
+        - in: query
+          name: department
+          schema: { type: string }
+        - in: query
+          name: location
+          schema: { type: string }
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [newest, oldest, highest_priority, recently_updated]
+            default: newest
+      responses:
+        "200":
+          description: Issue list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Issue"
+    post:
+      operationId: createIssue
+      tags: [issues]
+      summary: Report a new campus issue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueInput"
+      responses:
+        "201":
+          description: Created issue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateIssueResult"
+  /issues/analyze:
+    post:
+      operationId: analyzeIssue
+      tags: [issues]
+      summary: Analyze issue description
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueAnalysisInput"
+      responses:
+        "200":
+          description: AI-style analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IssueAnalysis"
+  /issues/{issueId}:
+    get:
+      operationId: getIssue
+      tags: [issues]
+      summary: Get issue details
+      parameters:
+        - in: path
+          name: issueId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Issue details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Issue"
+        "404":
+          description: Issue not found
+    patch:
+      operationId: updateIssue
+      tags: [issues]
+      summary: Update issue management fields
+      parameters:
+        - in: path
+          name: issueId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IssueUpdate"
+      responses:
+        "200":
+          description: Updated issue
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Issue"
+  /issues/{issueId}/history:
+    get:
+      operationId: getIssueHistory
+      tags: [issues]
+      summary: Get issue status history
+      parameters:
+        - in: path
+          name: issueId
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Issue history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/StatusHistory"
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: List notifications
+      responses:
+        "200":
+          description: Notification list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+  /notifications/{notificationId}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark a notification as read
+      parameters:
+        - in: path
+          name: notificationId
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notification"
+  /analytics:
+    get:
+      operationId: getAnalytics
+      tags: [analytics]
+      summary: Get campus issue analytics
+      responses:
+        "200":
+          description: Analytics aggregates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analytics"
+  /metadata/locations:
+    get:
+      operationId: getLocations
+      tags: [metadata]
+      summary: Get campus location options
+      responses:
+        "200":
+          description: Location metadata
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CampusLocation"
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
+        status: { type: string }
+      required: [status]
+    Issue:
+      type: object
+      properties:
+        id: { type: integer }
+        issueId: { type: string }
+        description: { type: string }
+        shortDescription: { type: string }
+        category: { type: string }
+        aiCategory: { type: string }
+        priority: { type: string }
+        aiPriority: { type: string }
+        priorityReason: { type: string }
+        status: { type: string }
+        campus: { type: string }
+        block: { type: string }
+        floor: { type: string }
+        room: { type: string }
+        locationLabel: { type: string }
+        imageUrl: { type: ["string", "null"] }
+        assignedDepartment: { type: ["string", "null"] }
+        reportedBy: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        resolvedAt: { type: ["string", "null"], format: date-time }
+        resolutionNotes: { type: ["string", "null"] }
+        duplicateOf: { type: ["string", "null"] }
       required:
+        - id
+        - issueId
+        - description
+        - shortDescription
+        - category
+        - aiCategory
+        - priority
+        - aiPriority
+        - priorityReason
         - status
-
+        - campus
+        - block
+        - floor
+        - room
+        - locationLabel
+        - reportedBy
+        - createdAt
+        - updatedAt
+    IssueInput:
+      type: object
+      properties:
+        description: { type: string, minLength: 12 }
+        category: { type: string }
+        campus: { type: string }
+        block: { type: string }
+        floor: { type: string }
+        room: { type: string }
+        customLocation: { type: ["string", "null"] }
+        imageUrl: { type: ["string", "null"] }
+        reportedBy: { type: string }
+      required: [description, campus, block, floor, room, reportedBy]
+    IssueUpdate:
+      type: object
+      properties:
+        status: { type: string }
+        priority: { type: string }
+        category: { type: string }
+        assignedDepartment: { type: ["string", "null"] }
+        note: { type: ["string", "null"] }
+        resolutionNotes: { type: ["string", "null"] }
+    CreateIssueResult:
+      type: object
+      properties:
+        issue: { $ref: "#/components/schemas/Issue" }
+        similarIssues:
+          type: array
+          items: { $ref: "#/components/schemas/Issue" }
+      required: [issue, similarIssues]
+    IssueAnalysisInput:
+      type: object
+      properties:
+        description: { type: string, minLength: 1 }
+      required: [description]
+    IssueAnalysis:
+      type: object
+      properties:
+        category: { type: string }
+        priority: { type: string }
+        priorityReason: { type: string }
+        confidence: { type: number }
+      required: [category, priority, priorityReason, confidence]
+    StatusHistory:
+      type: object
+      properties:
+        id: { type: integer }
+        issueId: { type: string }
+        previousStatus: { type: ["string", "null"] }
+        newStatus: { type: string }
+        changedBy: { type: string }
+        timestamp: { type: string, format: date-time }
+        note: { type: ["string", "null"] }
+      required: [id, issueId, newStatus, changedBy, timestamp]
+    Notification:
+      type: object
+      properties:
+        id: { type: integer }
+        issueId: { type: ["string", "null"] }
+        message: { type: string }
+        read: { type: boolean }
+        createdAt: { type: string, format: date-time }
+      required: [id, message, read, createdAt]
+    DashboardSummary:
+      type: object
+      properties:
+        total: { type: integer }
+        reported: { type: integer }
+        inProgress: { type: integer }
+        resolved: { type: integer }
+        critical: { type: integer }
+        unreadNotifications: { type: integer }
+        recentIssues:
+          type: array
+          items: { $ref: "#/components/schemas/Issue" }
+      required: [total, reported, inProgress, resolved, critical, unreadNotifications, recentIssues]
+    Analytics:
+      type: object
+      properties:
+        byStatus:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        byPriority:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        byCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        byLocation:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        resolutionTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        insights:
+          type: array
+          items: { type: string }
+      required: [byStatus, byPriority, byCategory, byLocation, resolutionTrend, insights]
+    Metric:
+      type: object
+      properties:
+        label: { type: string }
+        value: { type: integer }
+      required: [label, value]
+    TrendPoint:
+      type: object
+      properties:
+        label: { type: string }
+        value: { type: integer }
+      required: [label, value]
+    CampusLocation:
+      type: object
+      properties:
+        campus: { type: string }
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/BlockLocation"
+      required: [campus, blocks]
+    BlockLocation:
+      type: object
+      properties:
+        name: { type: string }
+        floors:
+          type: array
+          items: { type: string }
+      required: [name, floors]

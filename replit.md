@@ -1,6 +1,6 @@
-# [Project name]
+# CampusCare
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+CampusCare helps students and staff report campus problems and lets administrators manage transparent resolution workflows.
 
 ## Run & Operate
 
@@ -22,15 +22,22 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/campus-care` — React + Vite web app with public landing, student reporting/tracking, admin operations, and analytics routes.
+- `artifacts/api-server` — Express API implementing the CampusCare issue, notification, timeline, analytics, and metadata endpoints.
+- `lib/api-spec/openapi.yaml` — source of truth for the API contract and generated client hooks.
+- `lib/db/src/schema/` — Drizzle/PostgreSQL schema for users, issues, status history, and notifications.
+- `artifacts/campus-care/src/index.css` — CampusCare visual theme and shared UI styles.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- API contracts are defined in OpenAPI first and consumed through generated React Query hooks.
+- The first-run database seed creates a small, realistic demo dataset so the dashboards are useful immediately.
+- Issue categorization, priority, and duplicate detection use deterministic heuristics so the hackathon demo works without an external AI key.
+- The UI uses a demo role switcher for student/admin flows; the backend models the reported-by identity and admin actions without adding a local auth system.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+CampusCare provides a polished landing page, student dashboard, issue submission with AI-style analysis and duplicate warnings, issue detail timelines, notifications, admin issue management, and analytics based on live database data.
 
 ## User preferences
 
@@ -38,7 +45,9 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Run `pnpm --filter @workspace/api-spec run codegen` after changing `lib/api-spec/openapi.yaml`.
+- The generated API client uses `Headers.entries()`, so composite client builds require `dom.iterable` in the TypeScript `lib` list.
+- API and web services are managed through the artifact workflows; do not start them with root-level dev commands.
 
 ## Pointers
 
